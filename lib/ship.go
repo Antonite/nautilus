@@ -2,6 +2,7 @@ package lib
 
 import (
 	"errors"
+	"log"
 )
 
 // ship struct
@@ -30,13 +31,15 @@ func NewShip(name string) *ship {
 // Given a path to a local file, load data records for a given ship.
 // Returns any encountered errors.
 func (ship *ship) loadDataFromFile(path string) error {
+	log.Printf("Loading ship data from file: %s...\n", path)
 	records, err := parseDataRecordsFromCSV(path)
 	if err != nil {
 		return err
 	}
 
 	// fill in any missing points
-	correctDataPoints(records, FieldsToCorrect)
+	log.Println("Cleaning up loaded data...")
+	correctDataPoints(records, correctibleDataFields)
 
 	ship.DataRecords = append(ship.DataRecords, records...)
 
@@ -59,19 +62,20 @@ func (ship *ship) sumDataBetweenTimeFrames(startTime float64, endTime float64, f
 	for i := 0; i < len(ship.DataRecords); i++ {
 		currTime := ship.DataRecords[i].dataMap[TimestampField]
 
-		// while before
+		// skip anything before
 		if currTime <= startTime || i == 0 {
 			continue
 		}
 
-		// when after
+		// skip anything after
 		if currTime >= endTime {
-			// add the last fragment between the ending time frames
+			// edge case if time frame is between two data points
 			prevTime := ship.DataRecords[i-1].dataMap[TimestampField]
 			if firstVal {
 				prevTime = startTime
 			}
 
+			// add the last fragment between the ending time frames
 			sum += ship.DataRecords[i-1].dataMap[field] * (endTime - prevTime) / multi
 			break
 		}
@@ -83,12 +87,15 @@ func (ship *ship) sumDataBetweenTimeFrames(startTime float64, endTime float64, f
 			continue
 		}
 
+		// add the total value between two data points based on the time gap between the points
 		sum += ship.DataRecords[i-1].dataMap[field] * (currTime - ship.DataRecords[i-1].dataMap[TimestampField]) / multi
 	}
 
 	return sum, nil
 }
 
+// Calculate miles per gallon efficiency of a ship within a time frame
+// Returns any encountered errors.
 func (ship *ship) getEfficiencyBetweenTimeFrames(start float64, end float64) (float64, error) {
 	distance, errD := ship.sumDataBetweenTimeFrames(start, end, SpeedField, SecondsPerHour)
 	if errD != nil {

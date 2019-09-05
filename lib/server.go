@@ -7,11 +7,17 @@ import (
 	"strconv"
 )
 
+// Server struct
+// Mux - custom http muxer
+// Ships - list of ships in the system
 type Server struct {
 	Mux   *http.ServeMux
 	Ships []ship
 }
 
+// Create new server.
+// Registers http routes to the internal muxer as part of initialization.
+// Returns pointer to the newly created server.
 func NewServer() *Server {
 	server := &Server{
 		Mux: http.NewServeMux(),
@@ -21,6 +27,8 @@ func NewServer() *Server {
 	return server
 }
 
+// Given a path to a local file, initialize the server data.
+// Returns any encountered errors.
 func (server *Server) InitFromFile(path string) error {
 	// load ship data
 	aShip := NewShip(path)
@@ -32,6 +40,7 @@ func (server *Server) InitFromFile(path string) error {
 	return nil
 }
 
+// Register routes to the given server's muxer.
 func (server *Server) registerRoutes() {
 	server.Mux.HandleFunc("/total_distance", func(w http.ResponseWriter, r *http.Request) {
 		log.Println("Hit endpoint: /total_distance")
@@ -49,6 +58,10 @@ func (server *Server) registerRoutes() {
 	})
 }
 
+// GET distance http handler
+// Accepts start and end time as parameters in epoch format.
+// Computes the total distance in miles within the given timeframe.
+// Writes the distance as JSON to the ResponseWriter.
 func (server *Server) getDistanceHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	type view struct {
@@ -62,6 +75,7 @@ func (server *Server) getDistanceHandler(w http.ResponseWriter, r *http.Request)
 	startRaw := r.URL.Query().Get("start")
 	endRaw := r.URL.Query().Get("end")
 
+	// parse times
 	start, startErr := strconv.ParseFloat(startRaw, 64)
 	end, endErr := strconv.ParseFloat(endRaw, 64)
 	if startErr != nil || endErr != nil {
@@ -92,6 +106,10 @@ func (server *Server) getDistanceHandler(w http.ResponseWriter, r *http.Request)
 	w.Write(js)
 }
 
+// GET fuel http handler
+// Accepts start and end time as parameters in epoch format.
+// Computes the total fuel spent in gallons within the given timeframe.
+// Writes the fuel amount as JSON to the ResponseWriter.
 func (server *Server) getFuelHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	type view struct {
@@ -135,6 +153,10 @@ func (server *Server) getFuelHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(js)
 }
 
+// GET efficiency http handler
+// Accepts start and end time as parameters in epoch format.
+// Computes the miles per gallon of fuel efficiency within the given timeframe.
+// Writes the efficiency as JSON to the ResponseWriter.
 func (server *Server) getEfficiencyHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	type view struct {

@@ -10,6 +10,8 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Given a path to a CSV file, parse the data row by row into a list of dataRecords.
+// Returns any encountered errors.
 func parseDataRecordsFromCSV(path string) ([]dataRecord, error) {
 	f, err := os.Open(path)
 	if err != nil {
@@ -72,6 +74,9 @@ func parseDataRecordsFromCSV(path string) ([]dataRecord, error) {
 	return dataRecords, nil
 }
 
+// Given a list of dataRecords, fill in any missing values.
+// The new values are estimated as the average between the last know data point and the next know data point.
+// Assumes the list of dataRecords is sorted based on a time field.
 func correctDataPoints(dataRecords []dataRecord, fieldsToCorrect []dataField) {
 	for _, field := range fieldsToCorrect {
 		index := -1
