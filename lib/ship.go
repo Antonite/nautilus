@@ -23,13 +23,13 @@ func (ship *ship) loadDataFromFile(path string) error {
 	return nil
 }
 
-func (ship *ship) getDistanceTraveled(startTime float64, endTime float64) float64 {
+func (ship *ship) sumDataBetweenTimeFrames(startTime float64, endTime float64, field dataField, multiplier float64) float64 {
 	// ideally, we would return an error here, but requirements state otherwise.
 	if startTime < 0 || endTime < 0 || endTime < startTime {
 		return -1
 	}
 
-	distance := 0.00
+	sum := 0.00
 	firstVal := true
 	for i := 0; i < len(ship.DataRecords); i++ {
 		currTime := ship.DataRecords[i].dataMap[TimestampField]
@@ -47,20 +47,19 @@ func (ship *ship) getDistanceTraveled(startTime float64, endTime float64) float6
 				prevTime = startTime
 			}
 
-			distance += ship.DataRecords[i-1].dataMap[SpeedField] * (endTime - prevTime) / 3600
+			sum += ship.DataRecords[i-1].dataMap[field] * (endTime - prevTime) / multiplier
 			break
 		}
 
-		// special case for first distance between two time frames
+		// special case for first difference between two time frames
 		if firstVal {
-			distance += ship.DataRecords[i-1].dataMap[SpeedField] * (currTime - startTime) / 3600
+			sum += ship.DataRecords[i-1].dataMap[field] * (currTime - startTime) / multiplier
 			firstVal = false
 			continue
 		}
 
-		// log.Printf("%v, %v, %v\n", distance, ship.DataRecords[i-1].dataMap[SpeedField], currTime-ship.DataRecords[i-1].dataMap[TimestampField])
-		distance += ship.DataRecords[i-1].dataMap[SpeedField] * (currTime - ship.DataRecords[i-1].dataMap[TimestampField]) / 3600
+		sum += ship.DataRecords[i-1].dataMap[field] * (currTime - ship.DataRecords[i-1].dataMap[TimestampField]) / multiplier
 	}
 
-	return distance
+	return sum
 }
