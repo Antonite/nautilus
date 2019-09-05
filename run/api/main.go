@@ -1,18 +1,26 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"nautilus/lib"
 	"net/http"
 )
 
 func main() {
+	inputFlag := flag.String("i", "res/ship.csv", "data file")
+	flag.Parse()
 
 	server := lib.NewServer()
-	nautilus := lib.NewShip("Nautilus")
+	if err := server.InitFromFile(*inputFlag); err != nil {
+		log.Fatal(err)
+	}
 
-	server.Ships = append(server.Ships, *nautilus)
+	registerRoutes()
+	log.Fatal(http.ListenAndServe(":8080", nil))
+}
 
+func registerRoutes() {
 	http.HandleFunc("/total_distance", func(w http.ResponseWriter, r *http.Request) {
 		lib.NewServer()
 	})
@@ -24,6 +32,4 @@ func main() {
 	// http.HandleFunc("/efficiency", func(w http.ResponseWriter, r *http.Request) {
 	// 	server.OrdersGetHandler(w, r)
 	// })
-
-	log.Fatal(http.ListenAndServe(":8080", nil))
 }

@@ -13,6 +13,8 @@ type dataRecord struct {
 	dataMap map[dataField]float64
 }
 
+var FieldsToCorrect = []dataField{SpeedField, FuelField}
+
 func newDataRecord(dataMap map[dataField]float64) *dataRecord {
 	return &dataRecord{
 		dataMap: dataMap,

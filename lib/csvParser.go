@@ -10,9 +10,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-var FieldsToCorrect = []dataField{SpeedField, FuelField}
-
-func parseCSVToDataPoint(path string) ([]dataRecord, error) {
+func parseDataRecordsFromCSV(path string) ([]dataRecord, error) {
 	f, err := os.Open("path")
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to open csv.")
@@ -71,11 +69,10 @@ func parseCSVToDataPoint(path string) ([]dataRecord, error) {
 		return dataRecords, errors.Wrap(err, "Failed to scan csv")
 	}
 
-	// correct data and return
-	return correctDataPoints(dataRecords, FieldsToCorrect)
+	return dataRecords, nil
 }
 
-func correctDataPoints(dataRecords []dataRecord, fieldsToCorrect []dataField) ([]dataRecord, error) {
+func correctDataPoints(dataRecords []dataRecord, fieldsToCorrect []dataField) {
 	for _, field := range fieldsToCorrect {
 		index := -1
 		recordsCount := len(dataRecords)
@@ -127,6 +124,4 @@ func correctDataPoints(dataRecords []dataRecord, fieldsToCorrect []dataField) ([
 			}
 		}
 	}
-
-	return dataRecords, nil
 }
