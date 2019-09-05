@@ -83,6 +83,10 @@ func correctDataPoints(dataRecords []dataRecord, fieldsToCorrect []dataField) {
 			if record.dataMap[field] == -1 && index == -1 {
 				index = i
 			} else {
+				if record.dataMap[field] == -1 {
+					continue
+				}
+
 				// correct empty fields
 				if index != -1 {
 					endPoint := record.dataMap[field]
@@ -95,10 +99,10 @@ func correctDataPoints(dataRecords []dataRecord, fieldsToCorrect []dataField) {
 					} else {
 						startPoint := dataRecords[index-1].dataMap[field]
 						// average increments for all missing points
-						increment := (startPoint - endPoint) / float64(i-index)
+						increment := (endPoint - startPoint) / float64(i-index+1)
 						// fix each point at speed index
 						for si := index; si < i; si++ {
-							dataRecords[si].dataMap[field] = startPoint + increment*(float64(si-index))
+							dataRecords[si].dataMap[field] = startPoint + increment*(float64(si-index+1))
 						}
 					}
 

@@ -16,5 +16,9 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// for _, s := range server.Ships[0].DataRecords {
+	// 	s.ToString()
+	// }
+
 	log.Fatal(http.ListenAndServe(":8080", server.Mux))
 }

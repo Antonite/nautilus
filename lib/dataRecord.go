@@ -21,13 +21,6 @@ func newDataRecord(dataMap map[dataField]float64) *dataRecord {
 	}
 }
 
-// func newDataPoint(key dataField, value float64) dataPoint {
-// 	return &dataPoint{
-// 		Key:   key,
-// 		Value: value,
-// 	}
-// }
-
 func newDataField(field string) dataField {
 	switch field {
 	case "speed":
