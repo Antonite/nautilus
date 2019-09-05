@@ -6,11 +6,17 @@ import (
 )
 
 type Server struct {
+	Mux   *http.ServeMux
 	Ships []ship
 }
 
 func NewServer() *Server {
-	return &Server{}
+	server := &Server{
+		Mux: http.NewServeMux(),
+	}
+
+	server.registerRoutes()
+	return server
 }
 
 func (server *Server) InitFromFile(path string) error {
@@ -24,10 +30,10 @@ func (server *Server) InitFromFile(path string) error {
 	return nil
 }
 
-func (server *Server) RegisterRoutes() {
-	http.HandleFunc("/total_distance", func(w http.ResponseWriter, r *http.Request) {
-		log.Println("hi")
-		// lib.NewServer()
+func (server *Server) registerRoutes() {
+	server.Mux.HandleFunc("/total_distance", func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Hit endpoint: /total_distance")
+		server.GetDistanceHandler(w, r)
 	})
 
 	// http.HandleFunc("/total_fuel", func(w http.ResponseWriter, r *http.Request) {
@@ -37,4 +43,17 @@ func (server *Server) RegisterRoutes() {
 	// http.HandleFunc("/efficiency", func(w http.ResponseWriter, r *http.Request) {
 	// 	server.OrdersGetHandler(w, r)
 	// })
+}
+
+func (server *Server) GetDistanceHandler(w http.ResponseWriter, r *http.Request) {
+
+	// js, err := json.Marshal(views)
+	// if err != nil {
+	// 	log.Println(err)
+	// 	return
+	// }
+
+	// w.Header().Set("Access-Control-Allow-Origin", "*")
+	// w.Header().Set("Content-Type", "application/json")
+	// w.Write(js)
 }

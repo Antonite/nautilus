@@ -16,6 +16,5 @@ func main() {
 		log.Fatal(err)
 	}
 
-	server.RegisterRoutes()
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":8080", server.Mux))
 }
