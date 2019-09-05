@@ -11,7 +11,7 @@ import (
 )
 
 func parseDataRecordsFromCSV(path string) ([]dataRecord, error) {
-	f, err := os.Open("path")
+	f, err := os.Open(path)
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to open csv.")
 	}
