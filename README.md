@@ -17,3 +17,4 @@ Example: <br/>
 - Move data to database obviously 
 - API should accept more params, such as ship ID
 - Expand generic field approach to handle different data types
+- Add config file for things like port number
