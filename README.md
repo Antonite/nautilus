@@ -4,7 +4,7 @@
 go build run/api
 
 ### Cmd Args
--f [string][optional] Path to input file. Default is `res/ship.csv`<br/>
+`-f` [string][optional] Path to input file. Default is `res/ship.csv`<br/>
 
 Example: <br/>
 ./api -f res/ship.csv
